@@ -117,6 +117,7 @@ def mark_sold_items(previous: Dict[str, Dict], current_product_ids: set, today: 
   for product_id, item in previous.items():
     if product_id not in current_product_ids:
       if item['status'] != 'Sold':
+        print(f"❌ Item sold: {item['display_name']} (was ${item['current_price']})")
         item['status'] = 'Sold'
         item['date_sold'] = today
       sold.append(item)
