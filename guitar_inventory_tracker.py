@@ -135,7 +135,7 @@ if __name__ == "__main__":
     store_name = store_choice
   
   if not validate_store_name(store_name):
-    print("❌ Error: Store name is invalid. It can only contain letters and spaces.")
+    print("Error: Store name is invalid. It can only contain letters and spaces.")
     exit(1)
   
   print("\nSelect a category:")
@@ -152,7 +152,7 @@ if __name__ == "__main__":
     category = category_options[category_index]
     category_filter = CATEGORY_MAP[category]
   except (ValueError, IndexError):
-    print("❌ Error: Invalid category selection.")
+    print("Error: Invalid category selection.")
     exit(1)
   
   # Generate CSV filename based on store name and category
@@ -164,7 +164,7 @@ if __name__ == "__main__":
   try:
     hits = fetch_inventory(store_name, category_filter)
     if not hits:
-      print(f"❌ No results found for {store_name} in category {category}. Try a different store or category.")
+      print(f"No results found for {store_name} in category {category}. Try a different store or category.")
       exit(1)
   except Exception as e:
     print("Error fetching data:", e)
