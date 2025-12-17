@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-ALGOLIA_API_URL = "https://7aq22qs8rj-dsn.algolia.net/1/indexes/*/queries"
+ALGOLIA_API_URL = f"https://{os.getenv('ALGOLIA_APP_ID')}-dsn.algolia.net/1/indexes/*/queries"
 HEADERS = {
     "x-algolia-api-key": os.getenv("ALGOLIA_API_KEY"),
     "x-algolia-application-id": os.getenv("ALGOLIA_APP_ID"),
