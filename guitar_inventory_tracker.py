@@ -5,11 +5,14 @@ import datetime
 import json
 from typing import List, Dict
 from zoneinfo import ZoneInfo
+from dotenv import load_dotenv
+
+load_dotenv()
 
 ALGOLIA_API_URL = "https://7aq22qs8rj-dsn.algolia.net/1/indexes/*/queries"
 HEADERS = {
-    "x-algolia-api-key": "d04d765e552eb08aff3601eae8f2b729",
-    "x-algolia-application-id": "7AQ22QS8RJ",
+    "x-algolia-api-key": os.getenv("ALGOLIA_API_KEY"),
+    "x-algolia-application-id": os.getenv("ALGOLIA_APP_ID"),
     "Content-Type": "application/json"
 }
 
