@@ -99,7 +99,7 @@ The purpose of this script is to use Guitar Center's existing search functionali
 Run the script:
 
 ```bash
-python guitar_inventory_tracker.py
+python3 guitar_inventory_tracker.py
 ```
 
 The script generates a CSV file at the root level containing a list of gear. Keep this file - it will be referenced in future script runs and updated with price changes, new items, and sold items.
