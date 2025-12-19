@@ -143,8 +143,8 @@ if __name__ == "__main__":
   for i, cat in enumerate(CATEGORY_MAP.keys(), 1):
     print(f"{i}. {cat}")
   
-  category_choice = input("\nEnter category number (1-4): ").strip()
   category_options = list(CATEGORY_MAP.keys())
+  category_choice = input(f"\nEnter category number (1-{len(category_options)}): ").strip()
   
   try:
     category_index = int(category_choice) - 1
