@@ -20,10 +20,11 @@ CATEGORY_MAP = {
   "Guitars": "categories.lvl0:Guitars",
   "Basses": "categories.lvl0:Bass",
   "Amplifiers": "categories.lvl1:Amplifiers%20%26%20Effects%20%3E%20Amplifiers",
-  "Effects": "categories.lvl1:Amplifiers%20%26%20Effects%20%3E%20Effects"
+  "Effects": "categories.lvl1:Amplifiers%20%26%20Effects%20%3E%20Effects",
+  "Pro Audio": "categories.lvl0:Pro%20Audio"
 }
 
-FAVORITE_STORES = {"1": "Palm Desert", "2": "San Bernardino", "3": "Hollywood", "4": "Manhattan"}
+FAVORITE_STORES = {"1": "Palm Desert", "2": "San Bernardino", "3": "Hollywood", "4": "Murrieta", "5": "Manhattan"}
 
 def validate_store_name(store_name: str) -> bool:
   """Check if store name contains only letters and spaces."""
