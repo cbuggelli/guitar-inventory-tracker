@@ -21,7 +21,10 @@ CATEGORY_MAP = {
   "Basses": "categories.lvl0:Bass",
   "Amplifiers": "categories.lvl1:Amplifiers%20%26%20Effects%20%3E%20Amplifiers",
   "Effects": "categories.lvl1:Amplifiers%20%26%20Effects%20%3E%20Effects",
-  "Pro Audio": "categories.lvl0:Pro%20Audio"
+  "Pro Audio": "categories.lvl0:Pro%20Audio",
+  "Drums & Percussion": "categories.lvl0:Drums%20%26%20Percussion",
+  "Folk & Traditional Instruments": "categories.lvl0:Folk%20%26%20Traditional%20Instruments",
+  "Accessories": "categories.lvl0:Accessories"
 }
 
 FAVORITE_STORES = {"1": "Palm Desert", "2": "San Bernardino", "3": "Hollywood", "4": "Murrieta", "5": "Manhattan"}
