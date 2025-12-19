@@ -18,7 +18,7 @@ HEADERS = {
 
 CATEGORY_MAP = {
   "Guitars": "categories.lvl0:Guitars",
-  "Basses": "categories.lvl1:Basses",
+  "Basses": "categories.lvl0:Bass",
   "Amplifiers": "categories.lvl1:Amplifiers%20%26%20Effects%20%3E%20Amplifiers",
   "Effects": "categories.lvl1:Amplifiers%20%26%20Effects%20%3E%20Effects"
 }
