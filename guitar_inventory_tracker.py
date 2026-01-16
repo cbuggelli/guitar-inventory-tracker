@@ -35,7 +35,7 @@ def validate_store_name(store_name: str) -> bool:
 
 def fetch_inventory(store_name: str, category_filter: str) -> List[Dict]:
   facet_filters = f'["{category_filter}","condition.lvl0:Used",["stores:{store_name.lower()}"]]'
-  params_string = f'query=&hitsPerPage=96&page=0&facetFilters={facet_filters}&facets=["*"]&numericFilters=["startDate<=1765567093"]&ruleContexts=["store"]'
+  params_string = f'query=&hitsPerPage=2000&page=0&facetFilters={facet_filters}&facets=["*"]&numericFilters=["startDate<=1765567093"]&ruleContexts=["store"]'
   
   payload = {
     "requests": [
@@ -47,7 +47,11 @@ def fetch_inventory(store_name: str, category_filter: str) -> List[Dict]:
   }
   response = requests.post(ALGOLIA_API_URL, headers=HEADERS, json=payload)
   response.raise_for_status()
-  return response.json()['results'][0]['hits']
+  hits = response.json()['results'][0]['hits']
+  if len(hits) == 2000:
+    print("Warning: Result set capped at 2000 items. Consider refining your search criteria.")
+
+  return hits
 
 def load_previous_inventory(filepath: str) -> Dict[str, Dict]:
   if not os.path.exists(filepath):
@@ -193,4 +197,4 @@ if __name__ == "__main__":
   full_inventory = new_items + existing_items + sold_items
 
   save_inventory(csv_filename, full_inventory)
-  print(f"✅ Inventory updated and saved to {csv_filename} with {len(new_items)} new items, {len(existing_items)} existing items, and {len(sold_items)} sold items.")
+  print(f"\n✅ Inventory updated and saved to {csv_filename} with {len(new_items)} new items, {len(existing_items)} existing items, and {len(sold_items)} sold items.")
