@@ -27,7 +27,13 @@ CATEGORY_MAP = {
   "Accessories": "categories.lvl0:Accessories"
 }
 
-FAVORITE_STORES = {"1": "Palm Desert", "2": "San Bernardino", "3": "Hollywood", "4": "Murrieta", "5": "Manhattan"}
+FAVORITE_STORES = {
+  "1": "Palm Desert", 
+  "2": "San Bernardino", 
+  "3": "Hollywood", 
+  "4": "Murrieta", 
+  "5": "Manhattan",
+}
 
 def validate_store_name(store_name: str) -> bool:
   """Check if store name contains only letters and spaces."""
@@ -61,14 +67,14 @@ def load_previous_inventory(filepath: str) -> Dict[str, Dict]:
     return {row['product_id']: row for row in reader}
   
 def save_inventory(filepath: str, inventory: List[Dict]):
-  fieldnames = ["product_id", "brand", "display_name", "current_price", "list_price", "price_history", "condition", "stickers", "date_added", "price_delta", "status", "date_sold"]
+  fieldnames = ["product_id", "brand", "display_name", "current_price", "list_price", "price_history", "condition", "stickers", "date_added", "price_delta", "status", "date_sold", "days_unsold"]
   with open(filepath, mode='w', newline='', encoding='utf-8') as file:
     writer = csv.DictWriter(file, fieldnames=fieldnames)
     writer.writeheader()
     for row in inventory:
       writer.writerow(row)
 
-def normalize_item(hit: Dict, previous: Dict[str, Dict], today: str, new_items_list: List[str]) -> Dict:
+def normalize_item(hit: Dict, previous: Dict[str, Dict], today: str, new_items_list: List[str], alert_list: List[Dict]) -> Dict:
   product_id = str(hit.get("productId", ""))
   brand = hit.get("brand", "")
   display_name = hit.get("displayName", "")
@@ -104,6 +110,26 @@ def normalize_item(hit: Dict, previous: Dict[str, Dict], today: str, new_items_l
     print(f"🆕 New item added: {display_name} at ${current_price:.2f}")
     new_items_list.append(product_id)
 
+  # Check for 30-day interval alerts (only on exact multiples of 30)
+  date_added_str = prev["date_added"] if prev else today
+  days_unsold = 0 
+  
+  try:
+    date_added = datetime.datetime.fromisoformat(date_added_str)
+    today_date = datetime.datetime.fromisoformat(today)
+    days_unsold = (today_date - date_added).days
+    
+    # Trigger alert if days unsold is exactly a multiple of 30
+    if days_unsold > 0 and days_unsold % 30 == 0:
+      alert_list.append({
+        "display_name": display_name,
+        "days_unsold": days_unsold,
+        "current_price": current_price,
+        "interval": days_unsold // 30
+      })
+  except (ValueError, TypeError):
+    # If date parsing fails, skip alert logic
+    pass
 
   return {
     "product_id": product_id,
@@ -113,11 +139,12 @@ def normalize_item(hit: Dict, previous: Dict[str, Dict], today: str, new_items_l
     "list_price": f"{list_price:.2f}",
     "condition": condition,
     "stickers": stickers,
-    "date_added": prev["date_added"] if prev else today,
+    "date_added": date_added_str,
     "price_delta": f"{price_delta:.2f}" if prev_price is not None else "0.00",
     "price_history": json.dumps(price_history),
     "status": "Available",
-    "date_sold": ""
+    "date_sold": "",
+    "days_unsold": days_unsold
   }
 
 def mark_sold_items(previous: Dict[str, Dict], current_product_ids: set, today: str) -> List[Dict]:
@@ -128,6 +155,16 @@ def mark_sold_items(previous: Dict[str, Dict], current_product_ids: set, today: 
         print(f"❌ Item sold: {item['display_name']} (was ${item['current_price']})")
         item['status'] = 'Sold'
         item['date_sold'] = today
+      
+      # Calculate days_unsold for sold items if not already set
+      if 'days_unsold' not in item or not item['days_unsold']:
+        try:
+          date_added = datetime.datetime.fromisoformat(item.get('date_added', today))
+          today_date = datetime.datetime.fromisoformat(today)
+          item['days_unsold'] = (today_date - date_added).days
+        except (ValueError, TypeError):
+          item['days_unsold'] = 0
+      
       sold.append(item)
   return sold
 
@@ -181,9 +218,10 @@ if __name__ == "__main__":
   current_inventory = []
   current_product_ids = set()
   new_product_ids = []
+  alert_list = []
 
   for hit in hits:
-    item = normalize_item(hit, previous_inventory, today, new_product_ids)
+    item = normalize_item(hit, previous_inventory, today, new_product_ids, alert_list)
     current_inventory.append(item)
     current_product_ids.add(item["product_id"])
 
@@ -197,4 +235,15 @@ if __name__ == "__main__":
   full_inventory = new_items + existing_items + sold_items
 
   save_inventory(csv_filename, full_inventory)
+  
+  # Display 30-day interval alerts
+  if alert_list:
+    print("\n⏰ 30-Day Interval Alerts:")
+    print("=" * 80)
+    for alert in alert_list:
+      print(f"⚠️  {alert['display_name']}")
+      print(f"   Days unsold: {alert['days_unsold']} days ({alert['interval']} x 30-day interval)")
+      print(f"   Current price: ${alert['current_price']:.2f}")
+      print("-" * 80)
+  
   print(f"\n✅ Inventory updated and saved to {csv_filename} with {len(new_items)} new items, {len(existing_items)} existing items, and {len(sold_items)} sold items.")
