@@ -112,7 +112,7 @@ def normalize_item(hit: Dict, previous: Dict[str, Dict], today: str, new_items_l
 
   # Check for 30-day interval alerts (only on exact multiples of 30)
   date_added_str = prev["date_added"] if prev else today
-  days_unsold = 0 
+  days_unsold = 0
   
   try:
     date_added = datetime.datetime.fromisoformat(date_added_str)
@@ -156,12 +156,12 @@ def mark_sold_items(previous: Dict[str, Dict], current_product_ids: set, today: 
         item['status'] = 'Sold'
         item['date_sold'] = today
       
-      # Calculate days_unsold for sold items if not already set
+      # Calculate days_unsold for sold items (between date_added and date_sold)
       if 'days_unsold' not in item or not item['days_unsold']:
         try:
           date_added = datetime.datetime.fromisoformat(item.get('date_added', today))
-          today_date = datetime.datetime.fromisoformat(today)
-          item['days_unsold'] = (today_date - date_added).days
+          date_sold = datetime.datetime.fromisoformat(item.get('date_sold', today))
+          item['days_unsold'] = (date_sold - date_added).days
         except (ValueError, TypeError):
           item['days_unsold'] = 0
       
